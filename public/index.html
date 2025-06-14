@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chatbot Survey</title>
+  <style>
+    body {
+      background-color: #343541;
+      font-family: Arial, sans-serif;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      padding: 40px 40px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .scenario {
+      background-color: #444654;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    #chatbox {
+      background-color: #444654;
+      border-radius: 10px;
+      padding: 15px;
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg {
+      margin: 10px 0;
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      line-height: 1.4em;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .user {
+      background-color: #0b93f6;
+      align-self: flex-end;
+      color: white;
+      border-bottom-right-radius: 0;
+    }
+
+    .bot {
+      background-color: #2e2e38;
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background-color: #19c37d;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      width: 20px;
+      height: 10px;
+      background: #2e2e38;
+      border-radius: 5px;
+      margin-left: 10px;
+      animation: typing 1s infinite;
+    }
+
+    @keyframes typing {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Chatbot Survey</h2>
+    <div class="scenario">
+      You’re planning a trip to a new city and need to gather some information. A digital assistant is here to help you complete this task. Just follow along with the conversation and answer the questions it asks.
+    </div>
+    <div id="chatbox"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    const input = document.getElementById("userInput");
+
+    const condition = {
+      IS: "low",  // Options: 'low', 'high'
+      HL: "high"  // Options: 'low', 'high'
+    };
+
+    const avatarSrc = condition.HL === "high" ? "/human.png" : "/robot.png";
+
+    const names = {
+      high: "Mira",
+      low: "EUR-Bot"
+    };
+
+    let introDone = false;
+
+    window.onload = () => {
+      const introMessage = condition.HL === "high"
+        ? `Hi, I'm ${names.high}, your assistant. I'm here to help you plan your trip. Are you ready to get started?`
+        : `Greetings. ${names.low} initialized. Starting task.`;
+      addMessage("bot", introMessage);
+      introDone = true;
+    };
+
+    input.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const message = input.value.trim();
+      if (!message) return;
+      addMessage("user", message);
+      input.value = "";
+
+      const typingBubble = document.createElement("div");
+      typingBubble.className = "msg bot";
+      typingBubble.textContent = "...";
+      chatbox.appendChild(typingBubble);
+      chatbox.scrollTop = chatbox.scrollHeight;
+
+      if (condition.HL === "high") {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message,
+            condition
+          })
+        });
+
+        const data = await res.json();
+        chatbox.removeChild(typingBubble);
+        addMessage("bot", data.reply);
+      } catch (err) {
+        chatbox.removeChild(typingBubble);
+        addMessage("bot", "Error: Could not get response from server.");
+      }
+    }
+
+    function addMessage(sender, text) {
+      const msg = document.createElement("div");
+      msg.className = `msg ${sender}`;
+
+      if (sender === "bot") {
+        const avatar = document.createElement("img");
+        avatar.src = avatarSrc;
+        avatar.className = "avatar";
+        msg.appendChild(avatar);
+      }
+
+      const span = document.createElement("span");
+      span.textContent = text;
+      msg.appendChild(span);
+      chatbox.appendChild(msg);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
