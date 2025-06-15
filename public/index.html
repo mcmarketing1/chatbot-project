@@ -27,16 +27,16 @@
       margin-bottom: 10px;
     }
 
-   /* .scenario {
-   //   background-color: #444654;
-   //   border-radius: 10px;
-   //   padding: 15px;
-   //   margin-bottom: 20px;
-   //   font-size: 14px;
-    } */
+    .scenario {
+     background-color: #c6c6ce;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    } 
 
     #chatbox {
-      background-color: #444654;
+      background-color: #c6c6ce;
       border-radius: 10px;
       padding: 15px;
       height: 400px;
@@ -50,6 +50,7 @@
       margin: 10px 0;
       max-width: 70%;
       padding: 10px 15px;
+      background-color: #c6c6ce;
       border-radius: 15px;
       line-height: 1.4em;
       display: flex;
@@ -91,7 +92,7 @@
 
     button {
       padding: 10px 15px;
-      background-color: #19c37d;
+      background-color: #0b93f6;
       border: none;
       border-radius: 10px;
       color: white;
@@ -118,7 +119,6 @@
 <body> 
   <div class="container">
     <h2>Personal Travel Assistant</h2> 
-    
     <div id="chatbox"></div>
     <div class="input-area">
       <input type="text" id="userInput" placeholder="Type a message..." />
@@ -127,90 +127,85 @@
   </div>
 
   <script>
-    const chatbox = document.getElementById("chatbox");
-    const input = document.getElementById("userInput");
+  const chatbox = document.getElementById("chatbox");
+  const input = document.getElementById("userInput");
 
-      //dynamic variables from Qualtrics
-    const urlParams = new URLSearchParams(window.location.search);
-    const HL = urlParams.get("HL") || "low";
-    const IS = urlParams.get("IS") || "low";
-    const participantID = urlParams.get("id") || "anonymous";
+  // Get dynamic values from Qualtrics URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const HL = urlParams.get("HL") || "low";
+  const IS = urlParams.get("IS") || "low";
+  const participantID = urlParams.get("id") || "anonymous";
 
-    const avatarSrc = condition.HL === "high" ? "/human.png" : "/robot.png";
+  const avatarSrc = HL === "high" ? "/human.png" : "/robot.png";
 
-    const names = {
-      high: "Ava",
-      low: "EUR-Bot"
-    };
+  const names = {
+    high: "Ava",
+    low: "EUR-Bot"
+  };
 
-    let introDone = false;
+  window.onload = () => {
+    const introMessage = HL === "high"
+      ? `Hi, I'm ${names.high}, your personal assistant. I'm here to help you plan your trip. Are you ready to get started?`
+      : `Hello, this is ${names.low}, an automated personal chatbot assistant. Can we start the task?`;
+    addMessage("bot", introMessage);
+  };
 
-    window.onload = () => {
-      const introMessage = condition.HL === "high"
-        ? `Hi, I'm ${names.high}, your personal assistant. I'm here to help you plan your trip. Are you ready to get started?`
-        : `Hello, this is ${names.low}, an automated personal chatbot assistant. Can we start the task?`;
-      addMessage("bot", introMessage);
-      introDone = true;
-    };
+  input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") sendMessage();
+  });
 
-    input.addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        sendMessage();
-      }
-    });
+  async function sendMessage() {
+    const message = input.value.trim();
+    if (!message) return;
 
-    async function sendMessage() {
-      const message = input.value.trim();
-      if (!message) return;
-      addMessage("user", message);
-      input.value = "";
+    addMessage("user", message);
+    input.value = "";
 
-      const typingBubble = document.createElement("div");
-      typingBubble.className = "msg bot";
-      typingBubble.textContent = "...";
-      chatbox.appendChild(typingBubble);
-      chatbox.scrollTop = chatbox.scrollHeight;
+    const typingBubble = document.createElement("div");
+    typingBubble.className = "msg bot";
+    typingBubble.textContent = "...";
+    chatbox.appendChild(typingBubble);
+    chatbox.scrollTop = chatbox.scrollHeight;
 
-      if (condition.HL === "high") {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      }
-
-      try {
-        const res = await fetch("/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message,
-            condition
-          })
-        });
-
-        const data = await res.json();
-        chatbox.removeChild(typingBubble);
-        addMessage("bot", data.reply);
-      } catch (err) {
-        chatbox.removeChild(typingBubble);
-        addMessage("bot", "Error: Could not get response from server.");
-      }
+    if (HL === "high") {
+      await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
-    function addMessage(sender, text) {
-      const msg = document.createElement("div");
-      msg.className = `msg ${sender}`;
+    try {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          condition: { HL, IS },
+          participantID
+        })
+      });
 
-      if (sender === "bot") {
-        const avatar = document.createElement("img");
-        avatar.src = avatarSrc;
-        avatar.className = "avatar";
-        msg.appendChild(avatar);
-      }
-
-      const span = document.createElement("span");
-      span.textContent = text;
-      msg.appendChild(span);
-      chatbox.appendChild(msg);
-      chatbox.scrollTop = chatbox.scrollHeight;
+      const data = await res.json();
+      chatbox.removeChild(typingBubble);
+      addMessage("bot", data.reply);
+    } catch (err) {
+      chatbox.removeChild(typingBubble);
+      addMessage("bot", "Error: Could not get response from server.");
     }
-  </script>
-</body>
-</html>
+  }
+
+  function addMessage(sender, text) {
+    const msg = document.createElement("div");
+    msg.className = `msg ${sender}`;
+
+    if (sender === "bot") {
+      const avatar = document.createElement("img");
+      avatar.src = avatarSrc;
+      avatar.className = "avatar";
+      msg.appendChild(avatar);
+    }
+
+    const span = document.createElement("span");
+    span.textContent = text;
+    msg.appendChild(span);
+    chatbox.appendChild(msg);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+</script>
