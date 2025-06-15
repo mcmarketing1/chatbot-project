@@ -32,7 +32,7 @@ app.post("/chat", async (req, res) => {
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // or 'gpt-4o' if you're using it
+      model: "gpt-3.5-turbo", // or 'gpt-4.1-mini' if you're using it
       messages: [
         { role: "system", content: `${systemPrompt} ${sensitivityInstructions}` },
         { role: "user", content: userMessage }

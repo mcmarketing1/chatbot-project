@@ -6,7 +6,7 @@
   <title>Chatbot Survey</title>
   <style>
     body {
-      background-color: #343541;
+      background-color: #ffffff;
       font-family: Arial, sans-serif;
       color: #ffffff;
       margin: 0;
@@ -23,17 +23,17 @@
     }
 
     h2 {
-      color: #ffffff;
+      color: #000000;
       margin-bottom: 10px;
     }
 
-    .scenario {
-      background-color: #444654;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
+   /* .scenario {
+   //   background-color: #444654;
+   //   border-radius: 10px;
+   //   padding: 15px;
+   //   margin-bottom: 20px;
+   //   font-size: 14px;
+    } */
 
     #chatbox {
       background-color: #444654;
@@ -115,12 +115,10 @@
     }
   </style>
 </head>
-<body>
+<body> 
   <div class="container">
-    <h2>Chatbot Survey</h2>
-    <div class="scenario">
-      You’re planning a trip to a new city and need to gather some information. A digital assistant is here to help you complete this task. Just follow along with the conversation and answer the questions it asks.
-    </div>
+    <h2>Personal Travel Assistant</h2> 
+    
     <div id="chatbox"></div>
     <div class="input-area">
       <input type="text" id="userInput" placeholder="Type a message..." />
@@ -132,15 +130,16 @@
     const chatbox = document.getElementById("chatbox");
     const input = document.getElementById("userInput");
 
-    const condition = {
-      IS: "low",  // Options: 'low', 'high'
-      HL: "high"  // Options: 'low', 'high'
-    };
+      //dynamic variables from Qualtrics
+    const urlParams = new URLSearchParams(window.location.search);
+    const HL = urlParams.get("HL") || "low";
+    const IS = urlParams.get("IS") || "low";
+    const participantID = urlParams.get("id") || "anonymous";
 
     const avatarSrc = condition.HL === "high" ? "/human.png" : "/robot.png";
 
     const names = {
-      high: "Mira",
+      high: "Ava",
       low: "EUR-Bot"
     };
 
@@ -148,8 +147,8 @@
 
     window.onload = () => {
       const introMessage = condition.HL === "high"
-        ? `Hi, I'm ${names.high}, your assistant. I'm here to help you plan your trip. Are you ready to get started?`
-        : `Greetings. ${names.low} initialized. Starting task.`;
+        ? `Hi, I'm ${names.high}, your personal assistant. I'm here to help you plan your trip. Are you ready to get started?`
+        : `Hello, this is ${names.low}, an automated personal chatbot assistant. Can we start the task?`;
       addMessage("bot", introMessage);
       introDone = true;
     };
