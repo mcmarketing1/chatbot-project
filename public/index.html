@@ -36,7 +36,7 @@
     } 
 
     #chatbox {
-      background-color: #c6c6ce;
+      background-color: #f1f1f1;
       border-radius: 10px;
       padding: 15px;
       height: 400px;
@@ -50,7 +50,7 @@
       margin: 10px 0;
       max-width: 70%;
       padding: 10px 15px;
-      background-color: #c6c6ce;
+      background-color: #f1f1f1;
       border-radius: 15px;
       line-height: 1.4em;
       display: flex;
@@ -86,6 +86,7 @@
       flex: 1;
       padding: 10px;
       border-radius: 10px;
+      background-color: #f1f1f1;
       border: none;
       font-size: 16px;
     }
@@ -130,18 +131,13 @@
   const chatbox = document.getElementById("chatbox");
   const input = document.getElementById("userInput");
 
-  // Get dynamic values from Qualtrics URL
   const urlParams = new URLSearchParams(window.location.search);
   const HL = urlParams.get("HL") || "low";
-  const IS = urlParams.get("IS") || "low";
+  const IS = urlParams.get("IS") || "high";
   const participantID = urlParams.get("id") || "anonymous";
 
   const avatarSrc = HL === "high" ? "/human.png" : "/robot.png";
-
-  const names = {
-    high: "Ava",
-    low: "EUR-Bot"
-  };
+  const names = { high: "Ava", low: "EUR-Bot" };
 
   window.onload = () => {
     const introMessage = HL === "high"
@@ -161,13 +157,14 @@
     addMessage("user", message);
     input.value = "";
 
-    const typingBubble = document.createElement("div");
-    typingBubble.className = "msg bot";
-    typingBubble.textContent = "...";
-    chatbox.appendChild(typingBubble);
-    chatbox.scrollTop = chatbox.scrollHeight;
-
+    let typingBubble;
     if (HL === "high") {
+      typingBubble = document.createElement("div");
+      typingBubble.className = "msg bot";
+      typingBubble.textContent = "...";
+      chatbox.appendChild(typingBubble);
+      chatbox.scrollTop = chatbox.scrollHeight;
+
       await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
@@ -183,10 +180,15 @@
       });
 
       const data = await res.json();
-      chatbox.removeChild(typingBubble);
+      if (typingBubble) chatbox.removeChild(typingBubble);
+
       addMessage("bot", data.reply);
+
+      if (data.reply.includes("proceed to the next part") || data.reply.includes("Proceed to the next section")) {
+        document.querySelector(".input-area").style.display = "none";
+      }
     } catch (err) {
-      chatbox.removeChild(typingBubble);
+      if (typingBubble) chatbox.removeChild(typingBubble);
       addMessage("bot", "Error: Could not get response from server.");
     }
   }
@@ -209,3 +211,5 @@
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 </script>
+</body>
+</html>
