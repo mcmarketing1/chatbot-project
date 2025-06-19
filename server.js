@@ -17,14 +17,14 @@ const questionIndex = {};      // Per participant progress
 const questions = {
   high: { //IS
     high: [ //HL
-      "To tailor your trip within a safe budget, could you share your approximate monthly income range?",
+      'To tailor your trip within a safe budget, could you share your approximate monthly income range?',
       "For booking purposes, could you confirm your full name and date of birth?",
       "Please share your home address so that I can offer you travel options from nearby airports, train stations, or bus stops.",
       "Do you have children or are there any family members traveling with you?",
       "Do you have any existing health conditions or accessibility needs I should account for in your travel plan?"
     ],
     low: [  //HL
-      "To ensure financial compatibility, enter your approximate monthly income range.",
+      'To ensure financial compatibility, enter your approximate monthly income range.',
       "For identity verification, provide full name and year of birth.",
       "To locate potential transport services, input your residential address.",
       "Specify the number of children or dependents traveling with you.",
@@ -52,7 +52,7 @@ const questions = {
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
   const condition = req.body.condition || {};
-  const HL = condition.HL || "low";
+  const HL = condition.HL || "high";
   const IS = condition.IS || "high";
   const participantID = req.body.participantID || "anonymous";
 
@@ -95,11 +95,11 @@ app.post("/chat", async (req, res) => {
   const prompt = HL === "high"
     ? `User just answered: "${userMessage}"
 Now respond with a polite acknowledgment and ask the following question:
-"${currentQuestion}"
+${currentQuestion}
 Do NOT invent or change the question. Respond in one message.`
     : `The user said: "${userMessage}"
 Now ask this question directly:
-"${currentQuestion}"
+${currentQuestion}
 Respond in a cold, robotic, and concise tone. Avoid all polite wording. Do not acknowledge the user's input. Do NOT alter the question content. Respond in one message.`;
 
   const messages = [
