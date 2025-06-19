@@ -15,36 +15,36 @@ const conversations = {};      // Per participant conversation log
 const questionIndex = {};      // Per participant progress
 
 const questions = {
-  high: {
-    high: [
-      "Could I ask for your age or birth year to help tailor recommendations?",
-      "Are you traveling with any children or family members?",
-      "What’s your current city or home location?",
-      "Would you feel comfortable sharing a ballpark of your yearly travel budget?",
-      "How many people are employed in your household?"
+  high: { //IS
+    high: [ //HL
+      "To tailor your trip within a safe budget, could you share your approximate monthly income range?",
+      "For booking purposes, could you confirm your full name and date of birth?",
+      "Please share your home address so that I can offer you travel options from nearby airports, train stations, or bus stops.",
+      "Do you have children or are there any family members traveling with you?",
+      "Do you have any existing health conditions or accessibility needs I should account for in your travel plan?"
     ],
-    low: [
-      "How old are you?",
-      "Are you traveling with kids or others?",
-      "Your current city?",
-      "Travel budget estimate?",
-      "Employed people in household?"
+    low: [  //HL
+      "To ensure financial compatibility, enter your approximate monthly income range.",
+      "For identity verification, provide full name and year of birth.",
+      "To locate potential transport services, input your residential address.",
+      "Specify the number of children or dependents traveling with you.",
+      "If applicable, list any relevant physical or medical conditions."
     ]
   },
-  low: {
-    high: [
-      "How often do you shop online for travel gear or bookings?",
-      "What types of websites do you usually visit when planning trips?",
-      "How much leisure time do you usually plan for yourself during city trips?",
-      "Do you follow any travel blogs or read travel-related news online?",
-      "What’s your go-to way to explore a city — walking, biking, public transport?"
+  low: { //IS
+    high: [ //HL
+      "How do you usually like to spend your leisure time? Exploring, relaxing at cafes, or visiting museums?",
+      "How often do you use travel or booking websites?",
+      "What’s your ideal travel pace? Packed with activities or more laid-back and spontaneous?",
+      "Do you prefer traveling solo or with others?",
+      "What’s your go-to way to explore a city? (e.g., walking, biking, public transport)"
     ],
-    low: [
-      "How often do you shop online for travel gear or bookings?",
-      "What websites do you use to plan travel?",
-      "How much free time do you plan on city trips?",
-      "Do you read travel blogs or news sites?",
-      "How do you explore cities: walk, bike, or transport?"
+    low: [ //HL
+      "To assign relevant activities, specify preferred leisure categories (e.g., sightseeing, resting, museums).",
+      "State how frequently you use online services for travel planning (times per week).",
+      "Select preferred pace for itinerary (options: slow / moderate / intensive).",
+      "Indicate whether you are traveling alone or accompanied.",
+      "Choose a preferred way to explore the city (e.g., walking, biking, public transport)."
     ]
   }
 };
